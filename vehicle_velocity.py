@@ -3,6 +3,9 @@ import numpy as np
 from ultralytics import YOLO
 import math
 import os
+import requests
+
+url = 'http://192.168.2.222:8000/car_pass'
 
 def avg_speed_calculation(speed_list):
     return sum(speed_list) / len(speed_list) if speed_list else 0
@@ -83,6 +86,11 @@ def process_videos(video_directory):
             video_path = os.path.join(video_directory, video_file)
             print(f"Processing video: {video_path}")
             avg_speed = velocity(video_path)
+
+            car_data = {'citypoint': video_counter, 'velocity': avg_speed}
+            response = requests.post(url, json=car_data)
+            print(response.text)
+
             all_avg_speeds[video_counter] = avg_speed
             video_counter += 1
     return all_avg_speeds
